@@ -7,21 +7,21 @@ export class TagFeed extends Feed<TagFeedResponse, TagFeedResponseItemsItem> {
   @Expose()
   private nextMaxId: string;
 
-  set state(body: TagFeedResponse) {
-    this.moreAvailable = body.more_available;
-    this.nextMaxId = body.next_max_id;
+  set state(data: TagFeedResponse) {
+    this.moreAvailable = data.more_available;
+    this.nextMaxId = data.next_max_id;
   }
 
   async request() {
-    const { body } = await this.client.request.send<TagFeedResponse>({
+    const { data } = await this.client.request.send<TagFeedResponse>({
       url: `/api/v1/feed/tag/${encodeURI(this.tag)}/`,
       qs: {
         rank_token: this.rankToken,
         max_id: this.nextMaxId,
       },
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   async items() {

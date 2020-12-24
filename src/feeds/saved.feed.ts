@@ -6,21 +6,21 @@ export class SavedFeed extends Feed<SavedFeedResponseRootObject, SavedFeedRespon
   @Expose()
   private nextMaxId: string;
 
-  set state(body: SavedFeedResponseRootObject) {
-    this.moreAvailable = body.more_available;
-    this.nextMaxId = body.next_max_id;
+  set state(data: SavedFeedResponseRootObject) {
+    this.moreAvailable = data.more_available;
+    this.nextMaxId = data.next_max_id;
   }
 
   async request(): Promise<SavedFeedResponseRootObject> {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       url: '/api/v1/feed/saved/',
       qs: {
         max_id: this.nextMaxId,
         include_igtv_preview: false,
       },
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   async items(): Promise<SavedFeedResponseMedia[]> {

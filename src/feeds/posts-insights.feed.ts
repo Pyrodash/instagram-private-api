@@ -10,12 +10,12 @@ export class PostsInsightsFeed extends Feed<PostsInsightsFeedResponseRootObject,
   private nextCursor: string = null;
 
   async items(): Promise<PostsInsightsFeedResponseEdgesItem[]> {
-    const body = await this.request();
-    return body.data.user.business_manager.top_posts_unit.top_posts.edges;
+    const data = await this.request();
+    return data.data.user.business_manager.top_posts_unit.top_posts.edges;
   }
 
   async request(): Promise<PostsInsightsFeedResponseRootObject> {
-    const body = await this.client.ads.graphQL<PostsInsightsFeedResponseRootObject>({
+    const data = await this.client.ads.graphQL<PostsInsightsFeedResponseRootObject>({
       surface: { friendlyName: 'IgInsightsPostGridSurfaceQuery' },
       documentId: '1981884911894608',
       variables: {
@@ -29,8 +29,8 @@ export class PostsInsightsFeed extends Feed<PostsInsightsFeedResponseRootObject,
         ...this.options,
       },
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   protected set state(response: PostsInsightsFeedResponseRootObject) {

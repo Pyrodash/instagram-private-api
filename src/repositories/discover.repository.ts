@@ -7,17 +7,17 @@ export class DiscoverRepository extends Repository {
    * @param targetId user id/pk
    */
   async chaining(targetId: string): Promise<DiscoverRepositoryChainingResponseRootObject> {
-    const { body } = await this.client.request.send<DiscoverRepositoryChainingResponseRootObject>({
+    const { data } = await this.client.request.send<DiscoverRepositoryChainingResponseRootObject>({
       url: '/api/v1/discover/chaining/',
       qs: {
         target_id: targetId,
       },
     });
-    return body;
+    return data;
   }
 
   async topicalExplore() {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       url: '/api/v1/discover/topical_explore/',
       qs: {
         is_prefetch: true,
@@ -28,11 +28,11 @@ export class DiscoverRepository extends Repository {
         include_fixed_destinations: false,
       },
     });
-    return body;
+    return data;
   }
 
   async markSuSeen() {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       url: '/api/v1/discover/mark_su_seen/',
       method: 'POST',
       form: this.client.request.sign({
@@ -40,11 +40,11 @@ export class DiscoverRepository extends Repository {
         _uuid: this.client.state.uuid,
       }),
     });
-    return body;
+    return data;
   }
 
   async profileSuBadge() {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       url: '/api/v1/discover/profile_su_badge/',
       method: 'POST',
       form: this.client.request.sign({
@@ -52,6 +52,6 @@ export class DiscoverRepository extends Repository {
         _uuid: this.client.state.uuid,
       }),
     });
-    return body;
+    return data;
   }
 }

@@ -9,9 +9,9 @@ export class TimelineFeed extends Feed<TimelineFeedResponse, TimelineFeedRespons
   @Expose()
   private nextMaxId: string;
   public reason: TimelineFeedReason = sample(['pull_to_refresh', 'warm_start_fetch', 'cold_start_fetch']);
-  set state(body) {
-    this.moreAvailable = body.more_available;
-    this.nextMaxId = body.next_max_id;
+  set state(data) {
+    this.moreAvailable = data.more_available;
+    this.nextMaxId = data.next_max_id;
   }
 
   async request(options: TimelineFeedsOptions = {}) {
@@ -48,7 +48,7 @@ export class TimelineFeed extends Feed<TimelineFeedResponse, TimelineFeedRespons
         is_pull_to_refresh: this.reason === 'pull_to_refresh' ? '1' : '0',
       });
     }
-    const { body } = await this.client.request.send<TimelineFeedResponse>({
+    const { data } = await this.client.request.send<TimelineFeedResponse>({
       url: `/api/v1/feed/timeline/`,
       method: 'POST',
       headers: {
@@ -59,8 +59,8 @@ export class TimelineFeed extends Feed<TimelineFeedResponse, TimelineFeedRespons
       },
       form,
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   async items() {

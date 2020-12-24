@@ -13,12 +13,12 @@ export class StoriesInsightsFeed extends Feed<
   private nextCursor: string = null;
 
   async items(): Promise<StoriesInsightsFeedResponseEdgesItem[]> {
-    const body = await this.request();
-    return body.data.user.business_manager.stories_unit.stories.edges;
+    const data = await this.request();
+    return data.data.user.business_manager.stories_unit.stories.edges;
   }
 
   async request(): Promise<StoriesInsightsFeedResponseRootObject> {
-    const body = await this.client.ads.graphQL<StoriesInsightsFeedResponseRootObject>({
+    const data = await this.client.ads.graphQL<StoriesInsightsFeedResponseRootObject>({
       surface: { friendlyName: 'IgInsightsStoryGridSurfaceQuery' },
       documentId: '1995528257207653',
       variables: {
@@ -32,8 +32,8 @@ export class StoriesInsightsFeed extends Feed<
         timeframe: this.timeframe,
       },
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   protected set state(response: StoriesInsightsFeedResponseRootObject) {

@@ -7,12 +7,12 @@ export class DirectThreadFeed extends Feed<DirectThreadFeedResponse, DirectThrea
   public seqId: number;
   @Expose()
   public cursor: string;
-  set state(body: DirectThreadFeedResponse) {
-    this.cursor = body.thread.oldest_cursor;
-    this.moreAvailable = body.thread.has_older;
+  set state(data: DirectThreadFeedResponse) {
+    this.cursor = data.thread.oldest_cursor;
+    this.moreAvailable = data.thread.has_older;
   }
   async request() {
-    const { body } = await this.client.request.send<DirectThreadFeedResponse>({
+    const { data } = await this.client.request.send<DirectThreadFeedResponse>({
       url: `/api/v1/direct_v2/threads/${this.id}/`,
       qs: {
         visual_message_return_type: 'unseen',
@@ -22,8 +22,8 @@ export class DirectThreadFeed extends Feed<DirectThreadFeedResponse, DirectThrea
         limit: 10,
       },
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   async items() {

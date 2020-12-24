@@ -1,9 +1,12 @@
-import { defaultsDeep, inRange, random } from 'lodash';
-import { createHmac } from 'crypto';
+import { defaultsDeep, random } from 'lodash';
+import * as CryptoJS from 'crypto-js';
 import { Subject } from 'rxjs';
 import { AttemptOptions, retry } from '@lifeomic/attempt';
-import * as request from 'request-promise';
-import { Options, Response } from 'request';
+import axiosCookieJarSupport from 'axios-cookiejar-support';
+import axiosCookieJarSupportRN from 'axios-cookiejar-support-react-native';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import * as querystring from 'querystring';
+import { Options } from 'request';
 import { IgApiClient } from './client';
 import {
   IgActionSpamError,
@@ -19,9 +22,12 @@ import {
   IgUserHasLoggedOutError,
 } from '../errors';
 import { IgResponse } from '../types';
-import JSONbigInt = require('json-bigint');
 
-const JSONbigString = JSONbigInt({ storeAsString: true });
+if (typeof navigator != 'undefined' && navigator.product === 'ReactNative') {
+  axiosCookieJarSupportRN(axios);
+} else {
+  axiosCookieJarSupport(axios);
+}
 
 import debug from 'debug';
 
@@ -43,7 +49,7 @@ export class Request {
 
   constructor(private client: IgApiClient) {}
 
-  private static requestTransform(body, response: Response, resolveWithFullResponse) {
+  /* private static requestTransform(body, response: Response, resolveWithFullResponse) {
     try {
       // Sometimes we have numbers greater than Number.MAX_SAFE_INTEGER in json response
       // To handle it we just wrap numbers with length > 15 it double quotes to get strings instead
@@ -54,30 +60,55 @@ export class Request {
       }
     }
     return resolveWithFullResponse ? response : response.body;
-  }
+  } */
 
   public async send<T = any>(userOptions: Options, onlyCheckHttpStatus?: boolean): Promise<IgResponse<T>> {
     const options = defaultsDeep(
       userOptions,
       {
-        baseUrl: 'https://i.instagram.com/',
-        resolveWithFullResponse: true,
+        //baseURL: 'https://i.instagram.com/',
         proxy: this.client.state.proxyUrl,
-        simple: false,
-        transform: Request.requestTransform,
+        //transformRequest: Request.requestTransform,
         jar: this.client.state.cookieJar,
-        strictSSL: false,
-        gzip: true,
         headers: this.getDefaultHeaders(),
         method: 'GET',
+        withCredentials: true,
       },
       this.defaults,
     );
+
+    options.url = `https://i.instagram.com${options.url}`;
+
+    if (options.form) {
+      if (!options.headers['Content-Type']) {
+        options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+      }
+
+      options.data = querystring.stringify(options.form);
+
+      options.form = null;
+      delete options.form;
+    }
+
+    if (options.qs) {
+      options.params = options.qs;
+
+      options.qs = null;
+      delete options.qs;
+    }
+
+    for (const i in options.headers) {
+      if (!options.headers[i]) {
+        options.headers[i] = null;
+        delete options.headers[i];
+      }
+    }
+
     Request.requestDebug(`Requesting ${options.method} ${options.url || options.uri || '[could not find url]'}`);
     const response = await this.faultTolerantRequest(options);
     this.updateState(response);
     process.nextTick(() => this.end$.next());
-    if (response.body.status === 'ok' || (onlyCheckHttpStatus && response.statusCode === 200)) {
+    if (response.data.status === 'ok' || (onlyCheckHttpStatus && response.status === 200)) {
       return response;
     }
     const error = this.handleResponseError(response);
@@ -107,9 +138,7 @@ export class Request {
   }
 
   public signature(data: string) {
-    return createHmac('sha256', this.client.state.signatureKey)
-      .update(data)
-      .digest('hex');
+    return CryptoJS.HmacSHA256(data, this.client.state.signatureKey).toString(CryptoJS.enc.Hex);
   }
 
   public sign(payload: Payload): SignedPost {
@@ -126,26 +155,24 @@ export class Request {
     const textChangeEventCount = Math.round(size / random(2, 3)) || 1;
     const data = `${size} ${term} ${textChangeEventCount} ${Date.now()}`;
     const signature = Buffer.from(
-      createHmac('sha256', this.client.state.userBreadcrumbKey)
-        .update(data)
-        .digest('hex'),
+      CryptoJS.HmacSHA256(data, this.client.state.userBreadcrumbKey).toString(CryptoJS.enc.Hex),
     ).toString('base64');
     const body = Buffer.from(data).toString('base64');
     return `${signature}\n${body}\n`;
   }
 
-  private handleResponseError(response: Response): IgClientError {
+  private handleResponseError(response: AxiosResponse): IgClientError {
     Request.requestDebug(
       `Request ${response.request.method} ${response.request.uri.path} failed: ${
-        typeof response.body === 'object' ? JSON.stringify(response.body) : response.body
+        typeof response.data === 'object' ? JSON.stringify(response.data) : response.data
       }`,
     );
 
-    const json = response.body;
+    const json = response.data;
     if (json.spam) {
       return new IgActionSpamError(response);
     }
-    if (response.statusCode === 404) {
+    if (response.status === 404) {
       return new IgNotFoundError(response);
     }
     if (typeof json.message === 'string') {
@@ -172,9 +199,10 @@ export class Request {
     return new IgResponseError(response);
   }
 
-  protected async faultTolerantRequest(options: Options) {
+  protected async faultTolerantRequest(options: AxiosRequestConfig) {
     try {
-      return await retry(async () => request(options), this.attemptOptions);
+      const res = await retry(async () => axios(options), this.attemptOptions);
+      return res;
     } catch (err) {
       throw new IgNetworkError(err);
     }

@@ -7,10 +7,10 @@ export class ReelsMediaFeed extends Feed<ReelsMediaFeedResponseRootObject, Reels
   userIds: Array<number | string>;
   source: IgAppModule = 'feed_timeline';
 
-  protected set state(body: any) {}
+  protected set state(data: any) {}
 
   async request() {
-    const { body } = await this.client.request.send<ReelsMediaFeedResponseRootObject>({
+    const { data } = await this.client.request.send<ReelsMediaFeedResponseRootObject>({
       url: `/api/v1/feed/reels_media/`,
       method: 'POST',
       form: this.client.request.sign({
@@ -23,12 +23,12 @@ export class ReelsMediaFeed extends Feed<ReelsMediaFeedResponseRootObject, Reels
         supported_capabilities_new: JSON.stringify(SUPPORTED_CAPABILITIES),
       }),
     });
-    return body;
+    return data;
   }
 
   async items(): Promise<ReelsMediaFeedResponseItem[]> {
-    const body = await this.request();
-    return Object.values(body.reels).reduce(
+    const data = await this.request();
+    return Object.values(data.reels).reduce(
       (accumulator, current: ReelsMediaFeedResponse) => accumulator.concat(current.items),
       [],
     );

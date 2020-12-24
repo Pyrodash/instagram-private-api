@@ -2,7 +2,7 @@ import { Repository } from '../core/repository';
 
 export class CreativesRepository extends Repository {
   public async writeSupportedCapabilities() {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       url: '/api/v1/creatives/write_supported_capabilities/',
       method: 'POST',
       form: this.client.request.sign({
@@ -12,6 +12,6 @@ export class CreativesRepository extends Repository {
         _uuid: this.client.state.uuid,
       }),
     });
-    return body;
+    return data;
   }
 }

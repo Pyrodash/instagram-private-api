@@ -6,23 +6,23 @@ import {
 
 export class FbsearchRepository extends Repository {
   async suggestedSearches(type: 'blended' | 'users' | 'hashtags' | 'places') {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       url: '/api/v1/fbsearch/suggested_searches/',
       qs: {
         type,
       },
     });
-    return body;
+    return data;
   }
   async recentSearches() {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       url: '/api/v1/fbsearch/recent_searches/',
     });
-    return body;
+    return data;
   }
 
   async topsearchFlat(query: string): Promise<FbsearchRepositoryTopsearchFlatResponseRootObject> {
-    const { body } = await this.client.request.send<FbsearchRepositoryTopsearchFlatResponseRootObject>({
+    const { data } = await this.client.request.send<FbsearchRepositoryTopsearchFlatResponseRootObject>({
       url: '/api/v1/fbsearch/topsearch_flat/',
       qs: {
         timezone_offset: this.client.state.timezoneOffset,
@@ -31,10 +31,10 @@ export class FbsearchRepository extends Repository {
         context: 'blended',
       },
     });
-    return body;
+    return data;
   }
   async places(query: string) {
-    const { body } = await this.client.request.send<FbsearchRepositoryPlacesResponseRootObject>({
+    const { data } = await this.client.request.send<FbsearchRepositoryPlacesResponseRootObject>({
       url: '/api/v1/fbsearch/places/',
       qs: {
         timezone_offset: this.client.state.timezoneOffset,
@@ -42,6 +42,6 @@ export class FbsearchRepository extends Repository {
         query,
       },
     });
-    return body;
+    return data;
   }
 }

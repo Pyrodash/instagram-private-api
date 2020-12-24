@@ -7,24 +7,24 @@ export class UsertagsFeed extends Feed<UsertagsFeedResponseRootObject, UsertagsF
   @Expose()
   private nextMaxId: string;
 
-  protected set state(body: UsertagsFeedResponseRootObject) {
-    this.moreAvailable = body.more_available;
-    this.nextMaxId = body.next_max_id;
+  protected set state(data: UsertagsFeedResponseRootObject) {
+    this.moreAvailable = data.more_available;
+    this.nextMaxId = data.next_max_id;
   }
 
   async request() {
-    const { body } = await this.client.request.send<UsertagsFeedResponseRootObject>({
+    const { data } = await this.client.request.send<UsertagsFeedResponseRootObject>({
       url: `/api/v1/usertags/${this.id}/feed/`,
       qs: {
         max_id: this.nextMaxId,
       },
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   async items() {
-    const body = await this.request();
-    return body.items;
+    const data = await this.request();
+    return data.items;
   }
 }

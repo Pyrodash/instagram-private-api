@@ -13,15 +13,15 @@ export class LocationFeed extends Feed<LocationFeedResponse, LocationFeedRespons
   @Expose()
   private nextMediaIds: Array<string> = [];
 
-  protected set state(body: LocationFeedResponse) {
-    this.moreAvailable = body.more_available;
-    this.nextMaxId = body.next_max_id;
-    this.nextPage = body.next_page;
-    this.nextMediaIds = body.next_media_ids;
+  protected set state(data: LocationFeedResponse) {
+    this.moreAvailable = data.more_available;
+    this.nextMaxId = data.next_max_id;
+    this.nextPage = data.next_page;
+    this.nextMediaIds = data.next_media_ids;
   }
 
   public async request() {
-    const { body } = await this.client.request.send<LocationFeedResponse>({
+    const { data } = await this.client.request.send<LocationFeedResponse>({
       url: `/api/v1/locations/${this.id}/sections/`,
       method: 'POST',
       form: {
@@ -34,8 +34,8 @@ export class LocationFeed extends Feed<LocationFeedResponse, LocationFeedRespons
         max_id: this.nextMaxId,
       },
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   public async items() {

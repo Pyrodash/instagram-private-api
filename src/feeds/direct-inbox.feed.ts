@@ -9,14 +9,14 @@ export class DirectInboxFeed extends Feed<DirectInboxFeedResponse, DirectInboxFe
   @Expose()
   private seqId: number;
 
-  set state(body: DirectInboxFeedResponse) {
-    this.moreAvailable = body.inbox.has_older;
-    this.seqId = body.seq_id;
-    this.cursor = body.inbox.oldest_cursor;
+  set state(data: DirectInboxFeedResponse) {
+    this.moreAvailable = data.inbox.has_older;
+    this.seqId = data.seq_id;
+    this.cursor = data.inbox.oldest_cursor;
   }
 
   async request() {
-    const { body } = await this.client.request.send<DirectInboxFeedResponse>({
+    const { data } = await this.client.request.send<DirectInboxFeedResponse>({
       url: `/api/v1/direct_v2/inbox/`,
       qs: {
         visual_message_return_type: 'unseen',
@@ -28,8 +28,8 @@ export class DirectInboxFeed extends Feed<DirectInboxFeedResponse, DirectInboxFe
         limit: 20,
       },
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   async items() {

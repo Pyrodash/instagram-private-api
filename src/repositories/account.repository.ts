@@ -18,15 +18,22 @@ import { defaultsDeep } from 'lodash';
 import { IgSignupBlockError } from '../errors/ig-signup-block.error';
 import Bluebird = require('bluebird');
 import debug from 'debug';
-import * as crypto from 'crypto';
+import * as crypto from 'browserify-aes';
+import * as randomBytes from 'randombytes';
+import { publicEncrypt } from 'public-encrypt';
+
+const RSA_PKCS1_PADDING = 1;
 
 export class AccountRepository extends Repository {
   private static accountDebug = debug('ig:account');
+
+  public randomBytes = randomBytes;
+
   public async login(username: string, password: string): Promise<AccountRepositoryLoginResponseLogged_in_user> {
     if (!this.client.state.passwordEncryptionPubKey) {
       await this.client.qe.syncLoginExperiments();
     }
-    const {encrypted, time} = this.encryptPassword(password);
+    const { encrypted, time } = this.encryptPassword(password);
     const response = await Bluebird.try(() =>
       this.client.request.send<AccountRepositoryLoginResponseRootObject>({
         method: 'POST',
@@ -47,13 +54,13 @@ export class AccountRepository extends Repository {
         }),
       }),
     ).catch(IgResponseError, error => {
-      if (error.response.body.two_factor_required) {
+      if (error.response.data.two_factor_required) {
         AccountRepository.accountDebug(
-          `Login failed, two factor auth required: ${JSON.stringify(error.response.body.two_factor_info)}`,
+          `Login failed, two factor auth required: ${JSON.stringify(error.response.data.two_factor_info)}`,
         );
         throw new IgLoginTwoFactorRequiredError(error.response as IgResponse<AccountRepositoryLoginErrorResponse>);
       }
-      switch (error.response.body.error_type) {
+      switch (error.response.data.error_type) {
         case 'bad_password': {
           throw new IgLoginBadPasswordError(error.response as IgResponse<AccountRepositoryLoginErrorResponse>);
         }
@@ -65,7 +72,7 @@ export class AccountRepository extends Repository {
         }
       }
     });
-    return response.body.logged_in_user;
+    return response.data.logged_in_user;
   }
 
   public static createJazoest(input: string): string {
@@ -77,14 +84,17 @@ export class AccountRepository extends Repository {
     return `2${sum}`;
   }
 
-  public encryptPassword(password: string): { time: string, encrypted: string } {
-    const randKey = crypto.randomBytes(32);
-    const iv = crypto.randomBytes(12);
-    const rsaEncrypted = crypto.publicEncrypt({
-      key: Buffer.from(this.client.state.passwordEncryptionPubKey, 'base64').toString(),
-      // @ts-ignore
-      padding: crypto.constants.RSA_PKCS1_PADDING,
-    }, randKey);
+  public encryptPassword(password: string): { time: string; encrypted: string } {
+    const randKey = this.randomBytes(32);
+    const iv = this.randomBytes(12);
+    const rsaEncrypted = publicEncrypt(
+      {
+        key: Buffer.from(this.client.state.passwordEncryptionPubKey, 'base64').toString(),
+        // @ts-ignore
+        padding: RSA_PKCS1_PADDING,
+      },
+      randKey,
+    );
     const cipher = crypto.createCipheriv('aes-256-gcm', randKey, iv);
     const time = Math.floor(Date.now() / 1000).toString();
     cipher.setAAD(Buffer.from(time));
@@ -98,8 +108,10 @@ export class AccountRepository extends Repository {
         Buffer.from([1, this.client.state.passwordEncryptionKeyId]),
         iv,
         sizeBuffer,
-        rsaEncrypted, authTag, aesEncrypted])
-        .toString('base64'),
+        rsaEncrypted,
+        authTag,
+        aesEncrypted,
+      ]).toString('base64'),
     };
   }
 
@@ -110,7 +122,7 @@ export class AccountRepository extends Repository {
       trustThisDevice: '1',
       verificationMethod: '1',
     });
-    const { body } = await this.client.request.send<AccountRepositoryLoginResponseLogged_in_user>({
+    const { data } = await this.client.request.send<AccountRepositoryLoginResponseLogged_in_user>({
       url: '/api/v1/accounts/two_factor_login/',
       method: 'POST',
       form: this.client.request.sign({
@@ -124,11 +136,11 @@ export class AccountRepository extends Repository {
         verification_method: options.verificationMethod,
       }),
     });
-    return body;
+    return data;
   }
 
   public async logout() {
-    const { body } = await this.client.request.send<StatusResponse>({
+    const { data } = await this.client.request.send<StatusResponse>({
       method: 'POST',
       url: '/api/v1/accounts/logout/',
       form: {
@@ -139,11 +151,11 @@ export class AccountRepository extends Repository {
         _uuid: this.client.state.uuid,
       },
     });
-    return body;
+    return data;
   }
 
   async create({ username, password, email, first_name }) {
-    const { body } = await Bluebird.try(() =>
+    const { data } = await Bluebird.try(() =>
       this.client.request.send({
         method: 'POST',
         url: '/api/v1/accounts/create/',
@@ -163,7 +175,7 @@ export class AccountRepository extends Repository {
         }),
       }),
     ).catch(IgResponseError, error => {
-      switch (error.response.body.error_type) {
+      switch (error.response.data.error_type) {
         case 'signup_block': {
           AccountRepository.accountDebug('Signup failed');
           throw new IgSignupBlockError(error.response as IgResponse<SpamResponse>);
@@ -173,21 +185,21 @@ export class AccountRepository extends Repository {
         }
       }
     });
-    return body;
+    return data;
   }
 
   public async currentUser() {
-    const { body } = await this.client.request.send<AccountRepositoryCurrentUserResponseRootObject>({
+    const { data } = await this.client.request.send<AccountRepositoryCurrentUserResponseRootObject>({
       url: '/api/v1/accounts/current_user/',
       qs: {
         edit: true,
       },
     });
-    return body.user;
+    return data.user;
   }
 
   public async setBiography(text: string) {
-    const { body } = await this.client.request.send<AccountRepositoryCurrentUserResponseRootObject>({
+    const { data } = await this.client.request.send<AccountRepositoryCurrentUserResponseRootObject>({
       url: '/api/v1/accounts/set_biography/',
       method: 'POST',
       form: this.client.request.sign({
@@ -198,7 +210,7 @@ export class AccountRepository extends Repository {
         raw_text: text,
       }),
     });
-    return body.user;
+    return data.user;
   }
 
   public async changeProfilePicture(picture: Buffer): Promise<AccountRepositoryCurrentUserResponseRootObject> {
@@ -207,7 +219,7 @@ export class AccountRepository extends Repository {
       file: picture,
       uploadId,
     });
-    const { body } = await this.client.request.send<AccountRepositoryCurrentUserResponseRootObject>({
+    const { data } = await this.client.request.send<AccountRepositoryCurrentUserResponseRootObject>({
       url: '/api/v1/accounts/change_profile_picture/',
       method: 'POST',
       form: {
@@ -217,11 +229,11 @@ export class AccountRepository extends Repository {
         upload_id: uploadId,
       },
     });
-    return body;
+    return data;
   }
 
   public async editProfile(options: AccountEditProfileOptions) {
-    const { body } = await this.client.request.send<AccountRepositoryCurrentUserResponseRootObject>({
+    const { data } = await this.client.request.send<AccountRepositoryCurrentUserResponseRootObject>({
       url: '/api/v1/accounts/edit_profile/',
       method: 'POST',
       form: this.client.request.sign({
@@ -232,11 +244,11 @@ export class AccountRepository extends Repository {
         _uuid: this.client.state.uuid,
       }),
     });
-    return body.user;
+    return data.user;
   }
 
   public async changePassword(oldPassword: string, newPassword: string) {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       url: '/api/v1/accounts/change_password/',
       method: 'POST',
       form: this.client.request.sign({
@@ -248,7 +260,7 @@ export class AccountRepository extends Repository {
         new_password2: newPassword,
       }),
     });
-    return body;
+    return data;
   }
 
   public async removeProfilePicture() {
@@ -264,7 +276,7 @@ export class AccountRepository extends Repository {
   }
 
   private async command(command: string): Promise<AccountRepositoryCurrentUserResponseRootObject> {
-    const { body } = await this.client.request.send<AccountRepositoryCurrentUserResponseRootObject>({
+    const { data } = await this.client.request.send<AccountRepositoryCurrentUserResponseRootObject>({
       url: `/api/v1/accounts/${command}/`,
       method: 'POST',
       form: this.client.request.sign({
@@ -273,11 +285,11 @@ export class AccountRepository extends Repository {
         _uuid: this.client.state.uuid,
       }),
     });
-    return body;
+    return data;
   }
 
   public async readMsisdnHeader(usage = 'default') {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       method: 'POST',
       url: '/api/v1/accounts/read_msisdn_header/',
       headers: {
@@ -288,11 +300,11 @@ export class AccountRepository extends Repository {
         device_id: this.client.state.uuid,
       }),
     });
-    return body;
+    return data;
   }
 
   public async msisdnHeaderBootstrap(usage = 'default') {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       method: 'POST',
       url: '/api/v1/accounts/msisdn_header_bootstrap/',
       form: this.client.request.sign({
@@ -300,11 +312,11 @@ export class AccountRepository extends Repository {
         device_id: this.client.state.uuid,
       }),
     });
-    return body;
+    return data;
   }
 
   public async contactPointPrefill(usage = 'default') {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       method: 'POST',
       url: '/api/v1/accounts/contact_point_prefill/',
       form: this.client.request.sign({
@@ -312,11 +324,11 @@ export class AccountRepository extends Repository {
         device_id: this.client.state.uuid,
       }),
     });
-    return body;
+    return data;
   }
 
   public async getPrefillCandidates() {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       method: 'POST',
       url: '/api/v1/accounts/get_prefill_candidates/',
       form: this.client.request.sign({
@@ -325,11 +337,11 @@ export class AccountRepository extends Repository {
         device_id: this.client.state.uuid,
       }),
     });
-    return body;
+    return data;
   }
 
   public async processContactPointSignals() {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       method: 'POST',
       url: '/api/v1/accounts/process_contact_point_signals/',
       form: this.client.request.sign({
@@ -341,11 +353,11 @@ export class AccountRepository extends Repository {
         google_tokens: '[]',
       }),
     });
-    return body;
+    return data;
   }
 
   public async sendRecoveryFlowEmail(query: string) {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       url: '/api/v1/accounts/send_recovery_flow_email/',
       method: 'POST',
       form: this.client.request.sign({
@@ -356,6 +368,6 @@ export class AccountRepository extends Repository {
         query,
       }),
     });
-    return body;
+    return data;
   }
 }

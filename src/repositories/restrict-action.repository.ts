@@ -3,7 +3,7 @@ import { RestrictActionRepositoryRestrictResponseRootObject } from '../responses
 
 export class RestrictActionRepository extends Repository {
   public async restrict(targetUserId: number | string): Promise<RestrictActionRepositoryRestrictResponseRootObject> {
-    const { body } = await this.client.request.send<RestrictActionRepositoryRestrictResponseRootObject>({
+    const { data } = await this.client.request.send<RestrictActionRepositoryRestrictResponseRootObject>({
       url: '/api/v1/restrict_action/restrict/',
       method: 'POST',
       form: {
@@ -12,11 +12,11 @@ export class RestrictActionRepository extends Repository {
         target_user_id: targetUserId,
       },
     });
-    return body;
+    return data;
   }
 
   public async unrestrict(targetUserId: number | string): Promise<RestrictActionRepositoryRestrictResponseRootObject> {
-    const { body } = await this.client.request.send<RestrictActionRepositoryRestrictResponseRootObject>({
+    const { data } = await this.client.request.send<RestrictActionRepositoryRestrictResponseRootObject>({
       url: '/api/v1/restrict_action/unrestrict/',
       method: 'POST',
       form: {
@@ -25,6 +25,6 @@ export class RestrictActionRepository extends Repository {
         target_user_id: targetUserId,
       },
     });
-    return body;
+    return data;
   }
 }

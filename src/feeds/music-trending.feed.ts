@@ -16,7 +16,7 @@ export class MusicTrendingFeed extends Feed<MusicTrendingFeedResponseRootObject,
   }
 
   async request(): Promise<MusicTrendingFeedResponseRootObject> {
-    const { body } = await this.client.request.send<MusicTrendingFeedResponseRootObject>({
+    const { data } = await this.client.request.send<MusicTrendingFeedResponseRootObject>({
       url: '/api/v1/music/trending/',
       method: 'POST',
       form: {
@@ -27,8 +27,8 @@ export class MusicTrendingFeed extends Feed<MusicTrendingFeedResponseRootObject,
         browse_session_id: this.client.state.clientSessionId,
       },
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   protected set state(response: MusicTrendingFeedResponseRootObject) {

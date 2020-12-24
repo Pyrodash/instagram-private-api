@@ -6,13 +6,13 @@ export class DiscoverFeed extends Feed<DiscoverFeedResponseRootObject, DiscoverF
   @Expose()
   private nextMaxId: string;
 
-  set state(body: DiscoverFeedResponseRootObject) {
-    this.moreAvailable = body.more_available;
-    this.nextMaxId = body.max_id;
+  set state(data: DiscoverFeedResponseRootObject) {
+    this.moreAvailable = data.more_available;
+    this.nextMaxId = data.max_id;
   }
 
   async request() {
-    const { body } = await this.client.request.send<DiscoverFeedResponseRootObject>({
+    const { data } = await this.client.request.send<DiscoverFeedResponseRootObject>({
       url: `/api/v1/discover/ayml/`,
       method: 'POST',
       form: {
@@ -24,13 +24,13 @@ export class DiscoverFeed extends Feed<DiscoverFeedResponseRootObject, DiscoverF
         paginate: true,
       },
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   async items() {
-    const body = await this.request();
-    return body.suggested_users.suggestions.map(user =>
+    const data = await this.request();
+    return data.suggested_users.suggestions.map(user =>
       plainToClassFromExist(new DiscoverFeedResponseUser(this.client), user),
     );
   }

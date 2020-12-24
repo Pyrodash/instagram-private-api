@@ -6,25 +6,25 @@ export class BestiesFeed extends Feed<BestiesFeedResponse, BestiesFeedResponseUs
   @Expose()
   private nextMaxId: string;
 
-  set state(body: BestiesFeedResponse) {
-    this.moreAvailable = !!body.next_max_id;
-    this.nextMaxId = body.next_max_id;
+  set state(data: BestiesFeedResponse) {
+    this.moreAvailable = !!data.next_max_id;
+    this.nextMaxId = data.next_max_id;
   }
 
   async request() {
-    const { body } = await this.client.request.send<BestiesFeedResponse>({
+    const { data } = await this.client.request.send<BestiesFeedResponse>({
       url: `/api/v1/friendships/besties`,
       qs: {
         rank_token: this.rankToken,
         max_id: this.nextMaxId,
       },
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   async items() {
-    const body = await this.request();
-    return body.users.map(user => plainToClassFromExist(new BestiesFeedResponseUsersItem(this.client), user));
+    const data = await this.request();
+    return data.users.map(user => plainToClassFromExist(new BestiesFeedResponseUsersItem(this.client), user));
   }
 }

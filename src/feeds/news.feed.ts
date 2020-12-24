@@ -6,24 +6,24 @@ export class NewsFeed extends Feed<NewsFeedResponseRootObject, NewsFeedResponseS
   @Expose()
   private nextMaxId: string | number;
 
-  set state(body: NewsFeedResponseRootObject) {
-    this.moreAvailable = !!body.next_max_id;
-    this.nextMaxId = body.next_max_id;
+  set state(data: NewsFeedResponseRootObject) {
+    this.moreAvailable = !!data.next_max_id;
+    this.nextMaxId = data.next_max_id;
   }
 
   async request() {
-    const { body } = await this.client.request.send<NewsFeedResponseRootObject>({
+    const { data } = await this.client.request.send<NewsFeedResponseRootObject>({
       url: `/api/v1/news`,
       qs: {
         max_id: this.nextMaxId,
       },
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   async items() {
-    const body = await this.request();
-    return body.stories.map(user => plainToClassFromExist(new NewsFeedResponseStoriesItem(this.client), user));
+    const data = await this.request();
+    return data.stories.map(user => plainToClassFromExist(new NewsFeedResponseStoriesItem(this.client), user));
   }
 }

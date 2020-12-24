@@ -17,7 +17,7 @@ export class IgtvChannelFeed extends Feed<IgtvChannelFeedResponseRootObject, Igt
   }
 
   async request(): Promise<IgtvChannelFeedResponseRootObject> {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       url: '/api/v1/igtv/channel/',
       form: {
         id: this.channelId,
@@ -31,8 +31,8 @@ export class IgtvChannelFeed extends Feed<IgtvChannelFeedResponseRootObject, Igt
       },
       method: 'POST',
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   async items(): Promise<IgtvChannelFeedResponseItemsItem[]> {

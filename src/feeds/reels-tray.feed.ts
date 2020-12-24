@@ -15,7 +15,7 @@ export class ReelsTrayFeed extends Feed<ReelsTrayFeedResponseRootObject, ReelsTr
   }
 
   async request(): Promise<ReelsTrayFeedResponseRootObject> {
-    const { body } = await this.client.request.send<ReelsTrayFeedResponseRootObject>({
+    const { data } = await this.client.request.send<ReelsTrayFeedResponseRootObject>({
       url: '/api/v1/feed/reels_tray/',
       method: 'POST',
       form: {
@@ -25,7 +25,7 @@ export class ReelsTrayFeed extends Feed<ReelsTrayFeedResponseRootObject, ReelsTr
         _uuid: this.client.state.uuid,
       },
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 }

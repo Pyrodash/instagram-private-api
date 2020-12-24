@@ -15,13 +15,13 @@ export class AccountFollowersFeed extends Feed<AccountFollowersFeedResponse, Acc
   @Expose()
   public nextMaxId: string;
 
-  set state(body: AccountFollowersFeedResponse) {
-    this.moreAvailable = !!body.next_max_id;
-    this.nextMaxId = body.next_max_id;
+  set state(data: AccountFollowersFeedResponse) {
+    this.moreAvailable = !!data.next_max_id;
+    this.nextMaxId = data.next_max_id;
   }
 
   async request() {
-    const { body } = await this.client.request.send<AccountFollowersFeedResponse>({
+    const { data } = await this.client.request.send<AccountFollowersFeedResponse>({
       url: `/api/v1/friendships/${this.id}/followers/`,
       qs: {
         max_id: this.nextMaxId,
@@ -31,12 +31,12 @@ export class AccountFollowersFeed extends Feed<AccountFollowersFeedResponse, Acc
         enable_groups: this.enableGroups,
       },
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   async items() {
-    const body = await this.request();
-    return body.users.map(user => plainToClassFromExist(new AccountFollowersFeedResponseUsersItem(this.client), user));
+    const data = await this.request();
+    return data.users.map(user => plainToClassFromExist(new AccountFollowersFeedResponseUsersItem(this.client), user));
   }
 }

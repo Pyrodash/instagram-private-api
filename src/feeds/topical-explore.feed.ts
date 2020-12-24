@@ -5,7 +5,10 @@ import * as Chance from 'chance';
 import { TopicalExploreFeedResponseRootObject, TopicalExploreFeedResponseSectionalItemsItem } from '../responses';
 const chance = new Chance();
 
-export class TopicalExploreFeed extends Feed<TopicalExploreFeedResponseRootObject, TopicalExploreFeedResponseSectionalItemsItem> {
+export class TopicalExploreFeed extends Feed<
+  TopicalExploreFeedResponseRootObject,
+  TopicalExploreFeedResponseSectionalItemsItem
+> {
   module: IgAppModule = 'explore_popular';
   lat?: string | number;
   lng?: string | number;
@@ -18,9 +21,9 @@ export class TopicalExploreFeed extends Feed<TopicalExploreFeedResponseRootObjec
   @Expose()
   private nextMaxId: string;
 
-  set state(body: TopicalExploreFeedResponseRootObject) {
-    this.nextMaxId = body.next_max_id;
-    this.moreAvailable = body.more_available;
+  set state(data: TopicalExploreFeedResponseRootObject) {
+    this.nextMaxId = data.next_max_id;
+    this.moreAvailable = data.more_available;
   }
 
   async items(): Promise<TopicalExploreFeedResponseSectionalItemsItem[]> {
@@ -29,7 +32,7 @@ export class TopicalExploreFeed extends Feed<TopicalExploreFeedResponseRootObjec
   }
 
   async request(): Promise<TopicalExploreFeedResponseRootObject> {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       url: '/api/v1/discover/topical_explore/',
       method: 'GET',
       qs: {
@@ -47,6 +50,6 @@ export class TopicalExploreFeed extends Feed<TopicalExploreFeedResponseRootObjec
         include_fixed_destinations: true,
       },
     });
-    return body;
+    return data;
   }
 }

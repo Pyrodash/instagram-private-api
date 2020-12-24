@@ -9,14 +9,14 @@ export class MediaCommentsFeed extends Feed<MediaCommentsFeedResponse, MediaComm
   @Expose()
   private nextMinId: string;
 
-  set state(body: MediaCommentsFeedResponse) {
-    this.moreAvailable = !!body.next_max_id || !!body.next_min_id;
-    this.nextMaxId = body.next_max_id;
-    this.nextMinId = body.next_min_id;
+  set state(data: MediaCommentsFeedResponse) {
+    this.moreAvailable = !!data.next_max_id || !!data.next_min_id;
+    this.nextMaxId = data.next_max_id;
+    this.nextMinId = data.next_min_id;
   }
 
   async request() {
-    const { body } = await this.client.request.send<MediaCommentsFeedResponse>({
+    const { data } = await this.client.request.send<MediaCommentsFeedResponse>({
       url: `/api/v1/media/${this.id}/comments/`,
       qs: {
         can_support_threading: true,
@@ -24,8 +24,8 @@ export class MediaCommentsFeed extends Feed<MediaCommentsFeedResponse, MediaComm
         min_id: this.nextMinId,
       },
     });
-    this.state = body;
-    return body;
+    this.state = data;
+    return data;
   }
 
   async items() {

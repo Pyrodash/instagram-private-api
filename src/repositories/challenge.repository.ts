@@ -11,15 +11,15 @@ export class ChallengeRepository extends Repository {
    * Get challenge state.
    */
   public async state() {
-    const { body } = await this.client.request.send<ChallengeStateResponse>({
+    const { data } = await this.client.request.send<ChallengeStateResponse>({
       url: this.client.state.challengeUrl,
       qs: {
         guid: this.client.state.uuid,
         device_id: this.client.state.deviceId,
       },
     });
-    this.middleware(body);
-    return body;
+    this.middleware(data);
+    return data;
   }
 
   /**
@@ -32,7 +32,7 @@ export class ChallengeRepository extends Repository {
     if (isReplay) {
       url = url.replace('/challenge/', '/challenge/replay/');
     }
-    const { body } = await this.client.request.send<ChallengeStateResponse>({
+    const { data } = await this.client.request.send<ChallengeStateResponse>({
       url,
       method: 'POST',
       form: this.client.request.sign({
@@ -42,8 +42,8 @@ export class ChallengeRepository extends Repository {
         device_id: this.client.state.deviceId,
       }),
     });
-    this.middleware(body);
-    return body;
+    this.middleware(data);
+    return data;
   }
 
   /**
@@ -63,7 +63,7 @@ export class ChallengeRepository extends Repository {
   }
 
   public async sendPhoneNumber(phoneNumber: string) {
-    const { body } = await this.client.request.send<ChallengeStateResponse>({
+    const { data } = await this.client.request.send<ChallengeStateResponse>({
       url: this.client.state.challengeUrl,
       method: 'POST',
       form: this.client.request.sign({
@@ -73,8 +73,8 @@ export class ChallengeRepository extends Repository {
         device_id: this.client.state.deviceId,
       }),
     });
-    this.middleware(body);
-    return body;
+    this.middleware(data);
+    return data;
   }
 
   public async auto(reset = false): Promise<ChallengeStateResponse> {
@@ -105,7 +105,7 @@ export class ChallengeRepository extends Repository {
    * Go back to "select_verify_method"
    */
   public async reset() {
-    const { body } = await this.client.request.send<ChallengeStateResponse>({
+    const { data } = await this.client.request.send<ChallengeStateResponse>({
       url: this.client.state.challengeUrl.replace('/challenge/', '/challenge/reset/'),
       method: 'POST',
       form: this.client.request.sign({
@@ -114,15 +114,15 @@ export class ChallengeRepository extends Repository {
         device_id: this.client.state.deviceId,
       }),
     });
-    this.middleware(body);
-    return body;
+    this.middleware(data);
+    return data;
   }
 
   /**
    * Send the code received in the message
    */
   public async sendSecurityCode(code: string | number) {
-    const { body } = await this.client.request
+    const { data } = await this.client.request
       .send<ChallengeStateResponse>({
         url: this.client.state.challengeUrl,
         method: 'POST',
@@ -134,21 +134,21 @@ export class ChallengeRepository extends Repository {
         }),
       })
       .catch((error: IgResponseError) => {
-        if (error.response.statusCode === 400 && error.response.body.status === 'fail') {
-          throw new IgChallengeWrongCodeError(error.response.body.message);
+        if (error.response.status === 400 && error.response.data.status === 'fail') {
+          throw new IgChallengeWrongCodeError(error.response.data.message);
         }
         throw error;
       });
-    this.middleware(body);
-    return body;
+    this.middleware(data);
+    return data;
   }
 
-  private middleware(body: ChallengeStateResponse) {
-    if (body.action === 'close') {
+  private middleware(data: ChallengeStateResponse) {
+    if (data.action === 'close') {
       this.client.state.checkpoint = null;
       this.client.state.challenge = null;
     } else {
-      this.client.state.challenge = body;
+      this.client.state.challenge = data;
     }
   }
 }

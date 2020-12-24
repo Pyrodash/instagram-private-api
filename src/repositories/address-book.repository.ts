@@ -13,7 +13,7 @@ export class AddressBookRepository extends Repository {
     }>,
     module?: IgAppModule,
   ): Promise<AddressBookRepositoryLinkResponseRootObject> {
-    const { body } = await this.client.request.send<AddressBookRepositoryLinkResponseRootObject>({
+    const { data } = await this.client.request.send<AddressBookRepositoryLinkResponseRootObject>({
       url: '/api/v1/address_book/link/',
       method: 'POST',
       form: {
@@ -25,7 +25,7 @@ export class AddressBookRepository extends Repository {
         _uuid: this.client.state.uuid,
       },
     });
-    return body;
+    return data;
   }
 
   public async acquireOwnerContacts(me: {
@@ -34,7 +34,7 @@ export class AddressBookRepository extends Repository {
     first_name?: string;
     last_name?: string;
   }): Promise<StatusResponse> {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       url: '/api/v1/address_book/acquire_owner_contacts/',
       method: 'POST',
       form: {
@@ -44,6 +44,6 @@ export class AddressBookRepository extends Repository {
         _uuid: this.client.state.uuid,
       },
     });
-    return body;
+    return data;
   }
 }

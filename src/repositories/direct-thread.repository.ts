@@ -12,7 +12,7 @@ import { DirectThreadRepositoryApproveParticipantRequestResponseRootObject } fro
 
 export class DirectThreadRepository extends Repository {
   public async approve(threadId: string | number): Promise<StatusResponse> {
-    const { body } = await this.client.request.send<StatusResponse>({
+    const { data } = await this.client.request.send<StatusResponse>({
       url: `/api/v1/direct_v2/threads/${threadId}/approve/`,
       method: 'POST',
       form: {
@@ -20,11 +20,11 @@ export class DirectThreadRepository extends Repository {
         _uuid: this.client.state.uuid,
       },
     });
-    return body;
+    return data;
   }
 
   public async approveMultiple(threadIds: string[] | number[]): Promise<StatusResponse> {
-    const { body } = await this.client.request.send<StatusResponse>({
+    const { data } = await this.client.request.send<StatusResponse>({
       url: '/api/v1/direct_v2/threads/approve_multiple/',
       method: 'POST',
       form: {
@@ -33,11 +33,11 @@ export class DirectThreadRepository extends Repository {
         thread_ids: JSON.stringify(threadIds),
       },
     });
-    return body;
+    return data;
   }
 
   public async decline(threadId: string | number): Promise<StatusResponse> {
-    const { body } = await this.client.request.send<StatusResponse>({
+    const { data } = await this.client.request.send<StatusResponse>({
       url: `/api/v1/direct_v2/threads/${threadId}/decline/`,
       method: 'POST',
       form: {
@@ -45,11 +45,11 @@ export class DirectThreadRepository extends Repository {
         _uuid: this.client.state.uuid,
       },
     });
-    return body;
+    return data;
   }
 
   public async declineMultiple(threadIds: string[] | number[]): Promise<StatusResponse> {
-    const { body } = await this.client.request.send<StatusResponse>({
+    const { data } = await this.client.request.send<StatusResponse>({
       url: '/api/v1/direct_v2/threads/decline_multiple/',
       method: 'POST',
       form: {
@@ -58,11 +58,11 @@ export class DirectThreadRepository extends Repository {
         thread_ids: JSON.stringify(threadIds),
       },
     });
-    return body;
+    return data;
   }
 
   public async declineAll(): Promise<StatusResponse> {
-    const { body } = await this.client.request.send<StatusResponse>({
+    const { data } = await this.client.request.send<StatusResponse>({
       url: `/api/v1/direct_v2/threads/decline_all/`,
       method: 'POST',
       form: {
@@ -70,14 +70,14 @@ export class DirectThreadRepository extends Repository {
         _uuid: this.client.state.uuid,
       },
     });
-    return body;
+    return data;
   }
 
   public async approveParticipantRequests(
     threadId: string | number,
     userIds: string[],
   ): Promise<DirectThreadRepositoryApproveParticipantRequestResponseRootObject> {
-    const { body } = await this.client.request.send<DirectThreadRepositoryApproveParticipantRequestResponseRootObject>({
+    const { data } = await this.client.request.send<DirectThreadRepositoryApproveParticipantRequestResponseRootObject>({
       url: `/api/v1/direct_v2/threads/${threadId}/approve_participant_requests/`,
       method: 'POST',
       form: {
@@ -87,28 +87,28 @@ export class DirectThreadRepository extends Repository {
         _uuid: this.client.state.uuid,
       },
     });
-    return body;
+    return data;
   }
 
   // move to direct-repo?
   public async getByParticipants(
     recipientUsers: string[] | number[],
   ): Promise<DirectThreadRepositoryGetByParticipantsResponseRootObject> {
-    const { body } = await this.client.request.send<DirectThreadRepositoryGetByParticipantsResponseRootObject>({
+    const { data } = await this.client.request.send<DirectThreadRepositoryGetByParticipantsResponseRootObject>({
       url: '/api/v1/direct_v2/threads/get_by_participants/',
       method: 'GET',
       qs: {
         recipient_users: JSON.stringify(recipientUsers),
       },
     });
-    return body;
+    return data;
   }
 
   public async updateTitle(
     threadId: string | number,
     title: string,
   ): Promise<DirectThreadRepositoryUpdateTitleResponseRootObject> {
-    const { body } = await this.client.request.send<DirectThreadRepositoryUpdateTitleResponseRootObject>({
+    const { data } = await this.client.request.send<DirectThreadRepositoryUpdateTitleResponseRootObject>({
       url: `/api/v1/direct_v2/threads/${threadId}/update_title/`,
       method: 'POST',
       form: {
@@ -117,11 +117,11 @@ export class DirectThreadRepository extends Repository {
         title,
       },
     });
-    return body;
+    return data;
   }
 
   public async mute(threadId: string | number): Promise<StatusResponse> {
-    const { body } = await this.client.request.send<StatusResponse>({
+    const { data } = await this.client.request.send<StatusResponse>({
       url: `/api/v1/direct_v2/threads/${threadId}/mute/`,
       method: 'POST',
       form: {
@@ -129,11 +129,11 @@ export class DirectThreadRepository extends Repository {
         _uuid: this.client.state.uuid,
       },
     });
-    return body;
+    return data;
   }
 
   public async unmute(threadId: string | number): Promise<StatusResponse> {
-    const { body } = await this.client.request.send<StatusResponse>({
+    const { data } = await this.client.request.send<StatusResponse>({
       url: `/api/v1/direct_v2/threads/${threadId}/unmute/`,
       method: 'POST',
       form: {
@@ -141,14 +141,14 @@ export class DirectThreadRepository extends Repository {
         _uuid: this.client.state.uuid,
       },
     });
-    return body;
+    return data;
   }
 
   public async addUser(
     threadId: string | number,
     userIds: string[] | number[],
   ): Promise<DirectThreadRepositoryAddUserResponseRootObject> {
-    const { body } = await this.client.request.send<DirectThreadRepositoryAddUserResponseRootObject>({
+    const { data } = await this.client.request.send<DirectThreadRepositoryAddUserResponseRootObject>({
       url: `/api/v1/direct_v2/threads/${threadId}/add_user/`,
       method: 'POST',
       form: {
@@ -157,11 +157,11 @@ export class DirectThreadRepository extends Repository {
         _uuid: this.client.state.uuid,
       },
     });
-    return body;
+    return data;
   }
 
   public async leave(threadId: string): Promise<StatusResponse> {
-    const { body } = await this.client.request.send<StatusResponse>({
+    const { data } = await this.client.request.send<StatusResponse>({
       url: `/api/v1/direct_v2/threads/${threadId}/leave/`,
       method: 'POST',
       form: {
@@ -169,11 +169,11 @@ export class DirectThreadRepository extends Repository {
         _uuid: this.client.state.uuid,
       },
     });
-    return body;
+    return data;
   }
 
   public async hide(threadId: string): Promise<StatusResponse> {
-    const { body } = await this.client.request.send<StatusResponse>({
+    const { data } = await this.client.request.send<StatusResponse>({
       url: `/api/v1/direct_v2/threads/${threadId}/hide/`,
       method: 'POST',
       form: {
@@ -182,11 +182,11 @@ export class DirectThreadRepository extends Repository {
         use_unified_inbox: true,
       },
     });
-    return body;
+    return data;
   }
 
   public async markItemSeen(threadId: string, threadItemId: string) {
-    const { body } = await this.client.request.send<StatusResponse>({
+    const { data } = await this.client.request.send<StatusResponse>({
       url: `/api/v1/direct_v2/threads/${threadId}/items/${threadItemId}/seen/`,
       method: 'POST',
       form: {
@@ -198,7 +198,7 @@ export class DirectThreadRepository extends Repository {
         item_id: threadItemId,
       },
     });
-    return body;
+    return data;
   }
 
   public async broadcast(
@@ -220,17 +220,17 @@ export class DirectThreadRepository extends Repository {
       ...options.form,
     };
 
-    const { body } = await this.client.request.send<DirectThreadRepositoryBroadcastResponseRootObject>({
+    const { data } = await this.client.request.send<DirectThreadRepositoryBroadcastResponseRootObject>({
       url: `/api/v1/direct_v2/threads/broadcast/${options.item}/`,
       method: 'POST',
       form: options.signed ? this.client.request.sign(form) : form,
       qs: options.qs,
     });
-    return body;
+    return data;
   }
 
   public async deleteItem(threadId: string | number, itemId: string | number): Promise<StatusResponse> {
-    const { body } = await this.client.request.send({
+    const { data } = await this.client.request.send({
       url: `/api/v1/direct_v2/threads/${threadId}/items/${itemId}/delete/`,
       method: 'POST',
       form: {
@@ -238,6 +238,6 @@ export class DirectThreadRepository extends Repository {
         _uuid: this.client.state.uuid,
       },
     });
-    return body;
+    return data;
   }
 }

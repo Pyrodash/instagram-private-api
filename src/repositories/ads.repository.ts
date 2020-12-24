@@ -3,7 +3,7 @@ import { GraphQLRequestOptions } from '../types';
 
 export class AdsRepository extends Repository {
   public async graphQL<T extends { data: any }>(options: GraphQLRequestOptions): Promise<T> {
-    const { body } = await this.client.request.send<T>(
+    const { data } = await this.client.request.send<T>(
       {
         url: '/api/v1/ads/graphql/',
         method: 'POST',
@@ -22,6 +22,6 @@ export class AdsRepository extends Repository {
       },
       true,
     );
-    return body;
+    return data;
   }
 }
