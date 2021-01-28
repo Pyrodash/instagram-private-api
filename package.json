@@ -1,5 +1,5 @@
 {
-  "name": "instagram-private-api",
+  "name": "@pyrodash/instagram-private-api",
   "description": "Instagram private API wrapper for full access to instagram",
   "version": "1.43.3",
   "main": "dist/index.js",
@@ -12,14 +12,13 @@
     "node": ">=8.0.0"
   },
   "bugs": {
-    "url": "https://github.com/dilame/instagram-private-api/issues",
-    "email": "dilame.nickolson@gmail.com"
+    "url": "https://github.com/pyrodash/instagram-private-api/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dilame/instagram-private-api.git"
+    "url": "https://github.com/pyrodash/instagram-private-api.git"
   },
-  "homepage": "https://github.com/dilame/instagram-private-api",
+  "homepage": "https://github.com/pyrodash/instagram-private-api",
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\"",
