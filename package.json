@@ -1,7 +1,7 @@
 {
   "name": "@pyrodash/instagram-private-api",
   "description": "Instagram private API wrapper for full access to instagram (with react native support)",
-  "version": "1.43.3",
+  "version": "1.44.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -38,7 +38,7 @@
     "@lifeomic/attempt": "^3.0.0",
     "@types/chance": "^1.0.2",
     "@types/request-promise": "^4.1.43",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "axios-cookiejar-support": "^1.0.1",
     "axios-cookiejar-support-react-native": "^1.0.0",
     "bluebird": "^3.7.1",
