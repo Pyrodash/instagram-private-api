@@ -166,16 +166,21 @@ export class State {
 
   public get cookieUserId() {
     const usernameCookie = this.extractCookie('ds_user');
-    const extension = usernameCookie.extensions.find(ext => {
-      const parts = ext.split('ds_user_id=');
 
-      if (parts.length > 1) {
-        return true;
+    if (usernameCookie) {
+      const extension = usernameCookie.extensions.find(ext => {
+        const parts = ext.split('ds_user_id=');
+
+        if (parts.length > 1) {
+          return true;
+        }
+      });
+
+      if (extension) {
+        return extension.split('ds_user_id=')[1];
       }
-    });
-
-    if (extension) {
-      return extension.split('ds_user_id=')[1];
+    } else {
+      return this.extractCookieValue('ds_user_id');
     }
   }
 
