@@ -1,7 +1,7 @@
 {
   "name": "@pyrodash/instagram-private-api",
   "description": "Instagram private API wrapper for full access to instagram (with react native support)",
-  "version": "1.44.2",
+  "version": "1.44.3",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [

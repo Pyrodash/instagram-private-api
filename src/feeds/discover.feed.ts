@@ -4,7 +4,7 @@ import { DiscoverFeedResponseRootObject, DiscoverFeedResponseUser } from '../res
 
 export class DiscoverFeed extends Feed<DiscoverFeedResponseRootObject, DiscoverFeedResponseUser> {
   @Expose()
-  private nextMaxId: string;
+  public nextMaxId: string;
 
   set state(data: DiscoverFeedResponseRootObject) {
     this.moreAvailable = data.more_available;

@@ -7,7 +7,7 @@ export class TagsFeed extends Feed<TagsFeedResponse, TagsFeedResponseMedia> {
   tag: string;
   tab: 'top' | 'recent' | 'places';
   @Expose()
-  private nextMaxId: string;
+  public nextMaxId: string;
   @Expose()
   private nextPage: number;
   @Expose()

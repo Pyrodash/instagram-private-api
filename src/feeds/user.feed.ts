@@ -5,7 +5,7 @@ import { UserFeedResponse, UserFeedResponseItemsItem } from '../responses';
 export class UserFeed extends Feed<UserFeedResponse, UserFeedResponseItemsItem> {
   id: number | string;
   @Expose()
-  private nextMaxId: string;
+  public nextMaxId: string;
 
   protected set state(data: UserFeedResponse) {
     this.moreAvailable = data.more_available;

@@ -7,7 +7,7 @@ import { TimelineFeedResponse, TimelineFeedResponseMedia_or_ad } from '../respon
 export class TimelineFeed extends Feed<TimelineFeedResponse, TimelineFeedResponseMedia_or_ad> {
   tag: string;
   @Expose()
-  private nextMaxId: string;
+  public nextMaxId: string;
   public reason: TimelineFeedReason = sample(['pull_to_refresh', 'warm_start_fetch', 'cold_start_fetch']);
   set state(data) {
     this.moreAvailable = data.more_available;

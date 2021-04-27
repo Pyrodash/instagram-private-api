@@ -19,7 +19,7 @@ export class TopicalExploreFeed extends Feed<
   sessionId = chance.guid({ version: 4 });
 
   @Expose()
-  private nextMaxId: string;
+  public nextMaxId: string;
 
   set state(data: TopicalExploreFeedResponseRootObject) {
     this.nextMaxId = data.next_max_id;

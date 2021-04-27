@@ -9,7 +9,7 @@ export class ListReelMediaViewerFeed extends Feed<
   @Expose()
   private mediaId: string;
   @Expose()
-  private nextMaxId?: string = undefined;
+  public nextMaxId?: string = undefined;
 
   async items(): Promise<ListReelMediaViewerFeedResponseUsersItem[]> {
     const res = await this.request();

@@ -4,7 +4,7 @@ import { BestiesFeedResponse, BestiesFeedResponseUsersItem } from '../responses'
 
 export class BestiesFeed extends Feed<BestiesFeedResponse, BestiesFeedResponseUsersItem> {
   @Expose()
-  private nextMaxId: string;
+  public nextMaxId: string;
 
   set state(data: BestiesFeedResponse) {
     this.moreAvailable = !!data.next_max_id;

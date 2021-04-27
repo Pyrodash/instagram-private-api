@@ -5,9 +5,9 @@ import { MediaCommentsFeedResponse, MediaCommentsFeedResponseCommentsItem } from
 export class MediaCommentsFeed extends Feed<MediaCommentsFeedResponse, MediaCommentsFeedResponseCommentsItem> {
   id: string;
   @Expose()
-  private nextMaxId: string;
+  public nextMaxId: string;
   @Expose()
-  private nextMinId: string;
+  public nextMinId: string;
 
   set state(data: MediaCommentsFeedResponse) {
     this.moreAvailable = !!data.next_max_id || !!data.next_min_id;

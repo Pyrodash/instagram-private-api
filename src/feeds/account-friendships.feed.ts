@@ -7,7 +7,7 @@ export class PendingFriendshipsFeed extends Feed<
   PendingFriendshipsFeedResponseUsersItem
 > {
   @Expose()
-  private nextMaxId: string;
+  public nextMaxId: string;
 
   set state(data: PendingFriendshipsFeedResponse) {
     this.moreAvailable = !!data.next_max_id;

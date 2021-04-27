@@ -7,7 +7,7 @@ export class LocationFeed extends Feed<LocationFeedResponse, LocationFeedRespons
   id: string | number;
   tab: 'recent' | 'ranked';
   @Expose()
-  private nextMaxId: string;
+  public nextMaxId: string;
   @Expose()
   private nextPage: number;
   @Expose()

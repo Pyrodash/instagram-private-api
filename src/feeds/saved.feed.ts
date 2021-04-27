@@ -4,7 +4,7 @@ import { SavedFeedResponseRootObject, SavedFeedResponseMedia } from '../response
 
 export class SavedFeed extends Feed<SavedFeedResponseRootObject, SavedFeedResponseMedia> {
   @Expose()
-  private nextMaxId: string;
+  public nextMaxId: string;
 
   set state(data: SavedFeedResponseRootObject) {
     this.moreAvailable = data.more_available;

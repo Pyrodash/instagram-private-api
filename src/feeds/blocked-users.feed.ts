@@ -7,7 +7,7 @@ export class BlockedUsersFeed extends Feed<
   BlockedUsersFeedResponseBlockedListItem
 > {
   @Expose()
-  private nextMaxId: string;
+  public nextMaxId: string;
 
   set state(data: BlockedUsersFeedResponseRootObject) {
     this.moreAvailable = !!data.next_max_id;

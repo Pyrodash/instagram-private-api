@@ -5,7 +5,7 @@ import { TagFeedResponse, TagFeedResponseItemsItem } from '../responses';
 export class TagFeed extends Feed<TagFeedResponse, TagFeedResponseItemsItem> {
   tag: string;
   @Expose()
-  private nextMaxId: string;
+  public nextMaxId: string;
 
   set state(data: TagFeedResponse) {
     this.moreAvailable = data.more_available;

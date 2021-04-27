@@ -5,7 +5,7 @@ import { UsertagsFeedResponseItemsItem, UsertagsFeedResponseRootObject } from '.
 export class UsertagsFeed extends Feed<UsertagsFeedResponseRootObject, UsertagsFeedResponseItemsItem> {
   id: number | string;
   @Expose()
-  private nextMaxId: string;
+  public nextMaxId: string;
 
   protected set state(data: UsertagsFeedResponseRootObject) {
     this.moreAvailable = data.more_available;

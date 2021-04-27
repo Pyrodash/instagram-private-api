@@ -12,9 +12,9 @@ export class MediaInlineChildCommentsFeed extends Feed<
   mediaId: string;
   commentId: string;
   @Expose()
-  private nextMaxId: string;
+  public nextMaxId: string;
   @Expose()
-  private nextMinId?: string;
+  public nextMinId?: string;
 
   set state(state: MediaInlineChildCommentsFeedResponseRootObject) {
     this.moreAvailable = !!state.next_max_child_cursor;

@@ -4,7 +4,7 @@ import { NewsFeedResponseRootObject, NewsFeedResponseStoriesItem } from '../resp
 
 export class NewsFeed extends Feed<NewsFeedResponseRootObject, NewsFeedResponseStoriesItem> {
   @Expose()
-  private nextMaxId: string | number;
+  public nextMaxId: string | number;
 
   set state(data: NewsFeedResponseRootObject) {
     this.moreAvailable = !!data.next_max_id;
