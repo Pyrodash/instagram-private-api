@@ -165,22 +165,22 @@ export class State {
   }
 
   public get cookieUserId() {
-    const usernameCookie = this.extractCookie('ds_user');
+    let cookie = this.extractCookie('ds_user_id');
 
-    if (usernameCookie) {
-      const extension = usernameCookie.extensions.find(ext => {
-        const parts = ext.split('ds_user_id=');
-
-        if (parts.length > 1) {
-          return true;
-        }
-      });
-
-      if (extension) {
-        return extension.split('ds_user_id=')[1];
-      }
+    if (cookie) {
+      return cookie.value;
     } else {
-      return this.extractCookieValue('ds_user_id');
+      cookie = this.extractCookie('ds_user') || this.extractCookie('csrftoken');
+
+      if (cookie) {
+        for (const ext of cookie.extensions) {
+          const parts = ext.split('ds_user_id=');
+
+          if (parts.length > 1) {
+            return parts[1];
+          }
+        }
+      }
     }
   }
 
